@@ -1,8 +1,8 @@
 # TianChi-OGeek
 
 ## TianChi OGeek competition
-home page: https://tianchi.aliyun.com/competition/introduction.htm?spm=5176.100150.711.6.5ead2784MTFoDV&raceId=231688
-
+[home page](https://tianchi.aliyun.com/competition/introduction.htm?spm=5176.100150.711.6.5ead2784MTFoDV&raceId=231688)
+performance: 400/2888, F1=0.7270
 ### 题目背景
 
 在搜索业务下有一个场景叫实时搜索（Instance Search）,就是在用户不断输入过程中，实时返回查询结果。
@@ -39,5 +39,3 @@ home page: https://tianchi.aliyun.com/competition/introduction.htm?spm=5176.1001
 
 本次竞赛的评价标准采用F1 score 指标，正样本为1。计算方法参考https://en.wikipedia.org/wiki/F1_score
 
-
-## update log
