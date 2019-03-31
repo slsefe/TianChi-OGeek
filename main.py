@@ -1,4 +1,4 @@
-# 1.1 导入需要的库
+# 1.1 import necessary libraries
 import numpy as np
 import pandas as pd
 import os
@@ -29,7 +29,7 @@ pd.set_option('display.max_rows', 50)
 pd.set_option('display.max_seq_items', None)
 
 
-# 1.2 读取数据
+# 1.2 load data
 # train_file = 'd:/oppo/input/oppo_round1_train_20180929.txt'
 valid_file = 'd:/oppo/input/oppo_round1_vali_20180929.txt'
 test_A_file = 'd:/oppo/input/oppo_round1_test_A_20180929.txt'
@@ -39,10 +39,10 @@ test_data = pd.read_csv(test_A_file, sep='\t', header=None, names=['prefix', 'qu
 test_data['label'] = -1
 
 
-# 1.3 训练集数据预处理
+# 1.3 preprocessing of the train data
 def train_preprocess():
     print('preprocessing train data start')
-    # prefix有4个null，被误认为是空值，使用‘realnull’填充
+    # Prefix has four null values that are mistaken for None and is populated with 'realnull'
     file_path = 'd:/oppo/input/train_preprocessed.pkl'
     if os.path.exists(file_path):
         train_preprocessed = pickle.load(open(file_path,'rb'))
@@ -86,7 +86,7 @@ def train_preprocess():
 train_df = train_preprocess()
 
 
-# 1.4 合并训练集和测试集
+# 1.4 merge training data and test data
 # train_data = pd.concat([train_df,valid_df])
 # del train_df,valid_df
 train_df['label'] = train_df['label'].apply(lambda x: int(x))
@@ -95,7 +95,7 @@ test_data['label'] = test_data['label'].apply(lambda x: int(x))
 
 
 
-# 2.1 prefix特征
+# 2.1 prefix features
 # prefix的平均点击次数
 a = train_df['label'].sum()/train_df['prefix'].nunique()
 loga = np.log1p(train_df['label'].sum())/np.log(train_df['prefix'].nunique())
@@ -152,7 +152,7 @@ for col in test_data.columns[test_data.dtypes == 'float64']:
     test_data.fillna(test_data[col].mean())
 
 
-# 2.2 prefix长度特征
+# 2.2 length of prefix features
 train_df['prefix_len'] = train_df['prefix'].apply(len)
 valid_df['prefix_len'] = valid_df['prefix'].apply(len)
 test_data['prefix_len'] = test_data['prefix'].apply(len)
@@ -197,7 +197,7 @@ temp.to_csv('d:/oppo/input/prefixlen_feature.txt',sep='\t',index=False)
 del temp
 
 
-# 2.3 query_prediction特征
+# 2.3 query_prediction features
 def split_prediction(text):
     if pd.isna(text): return []
     return [s.strip() for s in text.replace("{", "").replace("}", "").split(", ")]
@@ -242,7 +242,7 @@ test_data = pd.merge(test_data, temp, on='pred_len', how='left')
 del temp
 
 
-# 2.4 title特征
+# 2.4 title features
 a = train_df['label'].sum()/(train_df['title'].nunique())
 b = train_df['label'].count()/(train_df['title'].nunique())
 # title的点击次数和搜索次数
@@ -292,7 +292,7 @@ temp.to_csv('d:/oppo/input/title_feature.txt',sep='\t',index=False)
 del temp
 
 
-# 2.5 title length特征
+# 2.5 title length features
 
 # prefix长度特征
 train_df['prefix_len'] = train_df['prefix'].apply(len)
@@ -343,7 +343,7 @@ test_data = pd.merge(test_data, temp, on='prefix_len', how='left')
 del temp
 
 
-# 2.6 tag特征
+# 2.6 tag features
 
 # prefix的点击次数和搜索次数
 temp = train_df[['tag','label']].groupby('tag', as_index = False)['label'].agg({'tag_click':'sum', 'tag_count':'count'})
@@ -382,7 +382,7 @@ temp.to_csv('d:/oppo/input/tag_feature.txt',sep='\t',index=False)
 del temp
 
 
-# 2.7 组合特征
+# 2.7 combination features
 
 # prefix&prefix_len, prefix_prediction_len, prefix&title, prefix&tag, prefix_len&prediction_len, prefix_len&title, prefix_len&tag, 
 # prediction_len&title, prediction_len&tag, title&tag
@@ -440,12 +440,12 @@ for i in range(len(items)):
 
 
 
-# 3.1 构造训练集、验证集、测试集
+# 3.1 Construct training set, validation set and test set
 train_df_ = train_df.drop(['prefix','query_prediction', 'title', 'tag'], axis = 1)
 valid_df_ = valid_df.drop(['prefix','query_prediction', 'title', 'tag'], axis = 1)
 test_data_ = test_data.drop(['prefix','query_prediction', 'title', 'tag'], axis = 1)
 
-# 3.2 训练模型
+# 3.2 training model
 print('train beginning')
 
 X = train_df_.drop(['label'], axis = 1)
@@ -483,7 +483,7 @@ print('f1-score on validation data:',f1_score(y, np.where(gbm.predict(X, num_ite
 print('f1-score on validation data:',f1_score(y_valid, np.where(gbm.predict(X_valid, num_iteration=gbm.best_iteration)>0.5, 1,0)))
 print(gbm.best_score)
 
-# 3.3 feature importance 
+# 3.3 plot feature importance 
 plt.figure(figsize=(12,6))
 lgb.plot_importance(gbm, max_num_features=30)
 plt.title("Featurertances")
